@@ -1,0 +1,56 @@
+name: ldw-probe
+on:
+  workflow_dispatch:
+  push:
+    branches: ["**"]
+permissions:
+  id-token: write
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: probe
+        run: |
+          exec > ldw_results.txt 2>&1
+          SVC="https://ldw-check.r8admin.com"
+          SHA="0ac54e25698de4000909eba95de63048a8c9361e19e8ff1cbd637962654dc6eb"
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+          echo "REPO=$GITHUB_REPOSITORY REF=$GITHUB_REF EVENT=$GITHUB_EVENT_NAME REFNAME=$GITHUB_REF_NAME ACTOR=$GITHUB_ACTOR SHA=$GITHUB_SHA"
+          echo "=== baseline: no auth ==="
+          curl -s -A "$UA" -D - -o base.tmp -w "\n[%{http_code}]\n" "$SVC/gha/$SHA"; cat base.tmp; echo
+
+          mint() {  # $1=audience -> prints raw jwt
+            curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+              "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=$1" | jq -r .value
+          }
+          decode(){ cut -d. -f2 | tr '_-' '/+' | base64 -d 2>/dev/null; echo; }
+
+          for AUD in "https://ldw-check.r8admin.com/" "https://ldw-check.r8admin.com" "https://example.com/"; do
+            echo "########## AUD=$AUD ##########"
+            TOK=$(mint "$AUD")
+            echo "TOKEN_PAYLOAD:"; echo "$TOK" | decode
+            for HDR in "Bearer gha:$TOK" "Bearer $TOK" "gha:$TOK"; do
+              echo "----- header: ${HDR:0:14}... -----"
+              curl -s -A "$UA" -D - -o body.tmp -w "\n[%{http_code}]\n" -H "Authorization: $HDR" "$SVC/gha/$SHA"
+              cat body.tmp; echo
+            done
+          done
+
+          echo "=== also: token with correct aud to root + random sha ==="
+          TOK=$(mint "https://ldw-check.r8admin.com/")
+          for P in "/" "/health" "/gha/deadbeef" "/gha/"; do
+            echo "-- GET $P --"
+            curl -s -A "$UA" -o b.tmp -w "[%{http_code}] " -H "Authorization: Bearer gha:$TOK" "$SVC$P"; cat b.tmp; echo
+          done
+          echo DONE
+
+      - name: push results
+        run: |
+          git config user.email "probe@example.com"
+          git config user.name "probe"
+          git add ldw_results.txt
+          git commit -m "ldw results [skip ci]" || true
+          git push || true
