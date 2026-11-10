@@ -1,0 +1,204 @@
+AWS_OIDC_TOKEN_PAYLOAD:
+{"actor":"bobolehe","actor_id":"62976623","aud":"sts.amazonaws.com","base_ref":"","check_run_id":"129560411670","event_name":"push","exp":1794273662,"head_ref":"","iat":1794273362,"iss":"https://token.actions.githubusercontent.com","job_workflow_ref":"bobolehe/bobolehe/.github/workflows/aws-probe.yml@refs/heads/probe-branch","job_workflow_sha":"73fc1372192e494e9ce811ae4bc2cc5b5088009a","jti":"0a61a496-22c7-4a81-80d3-83b119493597","nbf":1794273062,"ref":"refs/heads/probe-branch","ref_protected":"false","ref_type":"branch","repository":"bobolehe/bobolehe","repository_id":"728472222","repository_owner":"bobolehe","repository_owner_id":"62976623","repository_visibility":"public","run_attempt":"1","run_id":"42734540260","run_number":"1","runner_environment":"github-hosted","sha":"73fc1372192e494e9ce811ae4bc2cc5b5088009a","sub":"repo:bobolehe/bobolehe:ref:refs/heads/probe-branch","workflow":"aws-probe","workflow_ref":"bobolehe/bobolehe/.github/workflows/aws-probe.yml@refs/heads/probe-branch","workflow_sha":"73fc1372192e494e9ce811ae4bc2cc5b5088009a"}
+============================== ROLE=GitHubBuilder ==============================
+<ErrorResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>AccessDenied</Code>
+    <Message>Not authorized to perform sts:AssumeRoleWithWebIdentity</Message>
+  </Error>
+  <RequestId>cb814a3d-de24-4c3a-a3f8-5783c38e62d9</RequestId>
+</ErrorResponse>
+
+============================== ROLE=GitHubBuilderRole ==============================
+<ErrorResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>AccessDenied</Code>
+    <Message>Not authorized to perform sts:AssumeRoleWithWebIdentity</Message>
+  </Error>
+  <RequestId>1e25efd3-b4b4-42b1-b493-4f9424728cc8</RequestId>
+</ErrorResponse>
+
+============================== ROLE=GitHubActions ==============================
+<ErrorResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>AccessDenied</Code>
+    <Message>Not authorized to perform sts:AssumeRoleWithWebIdentity</Message>
+  </Error>
+  <RequestId>3f00a501-2198-48ff-b985-d1e5c921ac82</RequestId>
+</ErrorResponse>
+
+============================== ROLE=github-actions ==============================
+<ErrorResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>AccessDenied</Code>
+    <Message>Not authorized to perform sts:AssumeRoleWithWebIdentity</Message>
+  </Error>
+  <RequestId>24ed51cd-2aa3-4a7b-a8b8-357904755f71</RequestId>
+</ErrorResponse>
+
+============================== ROLE=github-actions-role ==============================
+<ErrorResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>AccessDenied</Code>
+    <Message>Not authorized to perform sts:AssumeRoleWithWebIdentity</Message>
+  </Error>
+  <RequestId>4357dd07-5620-4457-95ee-d289777d83ce</RequestId>
+</ErrorResponse>
+
+============================== ROLE=deploy ==============================
+<ErrorResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>AccessDenied</Code>
+    <Message>Not authorized to perform sts:AssumeRoleWithWebIdentity</Message>
+  </Error>
+  <RequestId>f143839b-299f-4829-8685-9d77897c8f56</RequestId>
+</ErrorResponse>
+
+============================== ROLE=deploy-role ==============================
+<ErrorResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>AccessDenied</Code>
+    <Message>Not authorized to perform sts:AssumeRoleWithWebIdentity</Message>
+  </Error>
+  <RequestId>de0c1716-b027-4f6a-9b0a-ceefbcb799a7</RequestId>
+</ErrorResponse>
+
+============================== ROLE=CICD ==============================
+<ErrorResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>AccessDenied</Code>
+    <Message>Not authorized to perform sts:AssumeRoleWithWebIdentity</Message>
+  </Error>
+  <RequestId>f24636e0-370b-406d-af42-7d675ebdca4c</RequestId>
+</ErrorResponse>
+
+============================== ROLE=ci-cd ==============================
+<ErrorResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>AccessDenied</Code>
+    <Message>Not authorized to perform sts:AssumeRoleWithWebIdentity</Message>
+  </Error>
+  <RequestId>89d7c1e9-4bce-4a9c-b858-d558a2854229</RequestId>
+</ErrorResponse>
+
+============================== ROLE=BuildRole ==============================
+<ErrorResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>AccessDenied</Code>
+    <Message>Not authorized to perform sts:AssumeRoleWithWebIdentity</Message>
+  </Error>
+  <RequestId>48dd2256-6def-46fb-958e-788e67bff8c5</RequestId>
+</ErrorResponse>
+
+============================== ROLE=builder ==============================
+<ErrorResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>AccessDenied</Code>
+    <Message>Not authorized to perform sts:AssumeRoleWithWebIdentity</Message>
+  </Error>
+  <RequestId>ec14f6dd-d448-40f4-a533-41c4bb5eff1c</RequestId>
+</ErrorResponse>
+
+============================== ROLE=replicate-poweruser ==============================
+<ErrorResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>AccessDenied</Code>
+    <Message>Not authorized to perform sts:AssumeRoleWithWebIdentity</Message>
+  </Error>
+  <RequestId>8ba390fc-d5c4-417f-9ba6-841c8bb413d6</RequestId>
+</ErrorResponse>
+
+============================== ROLE=OrganizationAccountAccessRole ==============================
+<ErrorResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>AccessDenied</Code>
+    <Message>Not authorized to perform sts:AssumeRoleWithWebIdentity</Message>
+  </Error>
+  <RequestId>eff97b10-18e7-435d-9f17-ba3aaa8acc3f</RequestId>
+</ErrorResponse>
+
+============================== ROLE=admin ==============================
+<ErrorResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>AccessDenied</Code>
+    <Message>Not authorized to perform sts:AssumeRoleWithWebIdentity</Message>
+  </Error>
+  <RequestId>628984f0-c467-4e04-83cf-ae7de9c140a4</RequestId>
+</ErrorResponse>
+
+============================== ROLE=Admin ==============================
+<ErrorResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>AccessDenied</Code>
+    <Message>Not authorized to perform sts:AssumeRoleWithWebIdentity</Message>
+  </Error>
+  <RequestId>58e9a796-b540-4647-ac92-695eb2dbd7f0</RequestId>
+</ErrorResponse>
+
+============================== ROLE=role/GitHubBuilder ==============================
+<ErrorResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>AccessDenied</Code>
+    <Message>Not authorized to perform sts:AssumeRoleWithWebIdentity</Message>
+  </Error>
+  <RequestId>b5147225-d30c-4e9e-8c83-8453ca1f0b76</RequestId>
+</ErrorResponse>
+
+=== also try other likely AWS accounts ===
+-- acct 851725545228 role GitHubBuilder --
+<ErrorResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>AccessDenied</Code>
+    <Message>Not authorized to perform sts:AssumeRoleWithWebIdentity</Message>
+  </Error>
+  <RequestId>2a5241ce-453f-40af-be2f-cf2ec85329ac</RequestId>
+</ErrorResponse>
+
+-- acct 230394422516 role GitHubBuilder --
+<ErrorResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>InvalidIdentityToken</Code>
+    <Message>The web identity token provided could not be validated. See the AssumeRoleWithWebIdentity documentation for requirements.</Message>
+  </Error>
+  <RequestId>000694a4-dc2c-4fd6-9dd0-844e090e53d1</RequestId>
+</ErrorResponse>
+
+-- acct 905418297001 role GitHubBuilder --
+<ErrorResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>InvalidIdentityToken</Code>
+    <Message>The web identity token provided could not be validated. See the AssumeRoleWithWebIdentity documentation for requirements.</Message>
+  </Error>
+  <RequestId>c1176cf3-54a0-47b8-b642-6503a66f3751</RequestId>
+</ErrorResponse>
+
+-- acct 123456789012 role GitHubBuilder --
+<ErrorResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">
+  <Error>
+    <Type>Sender</Type>
+    <Code>InvalidIdentityToken</Code>
+    <Message>The web identity token provided could not be validated. See the AssumeRoleWithWebIdentity documentation for requirements.</Message>
+  </Error>
+  <RequestId>f4b59ee3-c167-4e11-87e1-20d30d23694c</RequestId>
+</ErrorResponse>
+
+DONE_refs/heads/probe-branch
