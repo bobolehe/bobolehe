@@ -1,0 +1,21 @@
+### baseline correct-aud
+[403] {"error":"forbidden","reason":"repository is not allowed"}
+### aud no-slash
+[401] {"error":"unauthorized","reason":"GitHub Actions OIDC token verification failed"}
+### GHA upper prefix
+[401] {"error":"unauthorized","reason":"expected a GitHub Actions OIDC bearer token"}
+### two spaces
+[401] {"error":"unauthorized","reason":"expected a GitHub Actions OIDC bearer token"}
+### gha no Bearer
+[401] {"error":"unauthorized","reason":"expected a GitHub Actions OIDC bearer token"}
+### query repository
+[403] {"error":"forbidden","reason":"repository is not allowed"}
+### header X-Repo
+[403] {"error":"forbidden","reason":"repository is not allowed"}
+### health with token
+[200] {"status":"ok"}
+### bare /gha
+[404] 404 Not Found
+### root with token
+[404] 404 Not Found
+ALLDONE
