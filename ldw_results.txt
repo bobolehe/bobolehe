@@ -1,0 +1,180 @@
+REPO=bobolehe/bobolehe REF=refs/heads/main EVENT=push REFNAME=main ACTOR=bobolehe SHA=07318bfb75d8f10222dc01b28bf0de88bfe2a5d0
+=== baseline: no auth ===
+HTTP/2 401 
+date: Tue, 10 Nov 2026 02:50:32 GMT
+content-type: application/json
+content-length: 79
+expect-ct: max-age=86400, enforce
+referrer-policy: same-origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+x-xss-protection: 1; mode=block
+server: cloudflare
+cf-ray: a581c00e8ecbacec-SJC
+
+
+[401]
+{"error":"unauthorized","reason":"expected a GitHub Actions OIDC bearer token"}
+########## AUD=https://ldw-check.r8admin.com/ ##########
+TOKEN_PAYLOAD:
+{"actor":"bobolehe","actor_id":"62976623","aud":"https://ldw-check.r8admin.com/","base_ref":"","check_run_id":"129596395409","event_name":"push","exp":1794279332,"head_ref":"","iat":1794279032,"iss":"https://token.actions.githubusercontent.com","job_workflow_ref":"bobolehe/bobolehe/.github/workflows/ldw-probe.yml@refs/heads/main","job_workflow_sha":"07318bfb75d8f10222dc01b28bf0de88bfe2a5d0","jti":"fa124907-baa9-427c-ab81-86ad8b19e89e","nbf":1794278732,"ref":"refs/heads/main","ref_protected":"false","ref_type":"branch","repository":"bobolehe/bobolehe","repository_id":"728472222","repository_owner":"bobolehe","repository_owner_id":"62976623","repository_visibility":"public","run_attempt":"1","run_id":"42745471660","run_number":"1","runner_environment":"github-hosted","sha":"07318bfb75d8f10222dc01b28bf0de88bfe2a5d0","sub":"repo:bobolehe/bobolehe:ref:refs/heads/main","workflow":"ldw-probe","workflow_ref":"bobolehe/bobolehe/.github/workflows/ldw-probe.yml@refs/heads/main","workflow_sha":"07318bfb75d8f10222dc01b28bf0de88bfe2a5d0"}
+----- header: Bearer gha:eyJ... -----
+HTTP/2 403 
+date: Tue, 10 Nov 2026 02:50:32 GMT
+content-type: application/json
+content-length: 58
+expect-ct: max-age=86400, enforce
+referrer-policy: same-origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+x-xss-protection: 1; mode=block
+server: cloudflare
+cf-ray: a581c01068eb545f-SJC
+
+
+[403]
+{"error":"forbidden","reason":"repository is not allowed"}
+----- header: Bearer eyJhbGc... -----
+HTTP/2 401 
+date: Tue, 10 Nov 2026 02:50:32 GMT
+content-type: application/json
+content-length: 79
+expect-ct: max-age=86400, enforce
+referrer-policy: same-origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+x-xss-protection: 1; mode=block
+server: cloudflare
+cf-ray: a581c0124aa4ebe2-SJC
+
+
+[401]
+{"error":"unauthorized","reason":"expected a GitHub Actions OIDC bearer token"}
+----- header: gha:eyJhbGciOi... -----
+HTTP/2 401 
+date: Tue, 10 Nov 2026 02:50:32 GMT
+content-type: application/json
+content-length: 79
+expect-ct: max-age=86400, enforce
+referrer-policy: same-origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+x-xss-protection: 1; mode=block
+server: cloudflare
+cf-ray: a581c0128b8af64e-SJC
+
+
+[401]
+{"error":"unauthorized","reason":"expected a GitHub Actions OIDC bearer token"}
+########## AUD=https://ldw-check.r8admin.com ##########
+TOKEN_PAYLOAD:
+{"actor":"bobolehe","actor_id":"62976623","aud":"https://ldw-check.r8admin.com","base_ref":"","check_run_id":"129596395409","event_name":"push","exp":1794279332,"head_ref":"","iat":1794279032,"iss":"https://token.actions.githubusercontent.com","job_workflow_ref":"bobolehe/bobolehe/.github/workflows/ldw-probe.yml@refs/heads/main","job_workflow_sha":"07318bfb75d8f10222dc01b28bf0de88bfe2a5d0","jti":"4e6bd088-1e4d-4aab-ac52-05df30e1b26d","nbf":1794278732,"ref":"refs/heads/main","ref_protected":"false","ref_type":"branch","repository":"bobolehe/bobolehe","repository_id":"728472222","repository_owner":"bobolehe","repository_owner_id":"62976623","repository_visibility":"public","run_attempt":"1","run_id":"42745471660","run_number":"1","runner_environment":"github-hosted","sha":"07318bfb75d8f10222dc01b28bf0de88bfe2a5d0","sub":"repo:bobolehe/bobolehe:ref:refs/heads/main","workflow":"ldw-probe","workflow_ref":"bobolehe/bobolehe/.github/workflows/ldw-probe.yml@refs/heads/main","workflow_sha":"07318bfb75d8f10222dc01b28bf0de88bfe2a5d0"}
+----- header: Bearer gha:eyJ... -----
+HTTP/2 401 
+date: Tue, 10 Nov 2026 02:50:33 GMT
+content-type: application/json
+content-length: 81
+expect-ct: max-age=86400, enforce
+referrer-policy: same-origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+x-xss-protection: 1; mode=block
+server: cloudflare
+cf-ray: a581c0148fcbf017-SJC
+
+
+[401]
+{"error":"unauthorized","reason":"GitHub Actions OIDC token verification failed"}
+----- header: Bearer eyJhbGc... -----
+HTTP/2 401 
+date: Tue, 10 Nov 2026 02:50:33 GMT
+content-type: application/json
+content-length: 79
+expect-ct: max-age=86400, enforce
+referrer-policy: same-origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+x-xss-protection: 1; mode=block
+server: cloudflare
+cf-ray: a581c014ddca1739-SJC
+
+
+[401]
+{"error":"unauthorized","reason":"expected a GitHub Actions OIDC bearer token"}
+----- header: gha:eyJhbGciOi... -----
+HTTP/2 401 
+date: Tue, 10 Nov 2026 02:50:33 GMT
+content-type: application/json
+content-length: 79
+expect-ct: max-age=86400, enforce
+referrer-policy: same-origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+x-xss-protection: 1; mode=block
+server: cloudflare
+cf-ray: a581c015685c0793-SJC
+
+
+[401]
+{"error":"unauthorized","reason":"expected a GitHub Actions OIDC bearer token"}
+########## AUD=https://example.com/ ##########
+TOKEN_PAYLOAD:
+{"actor":"bobolehe","actor_id":"62976623","aud":"https://example.com/","base_ref":"","check_run_id":"129596395409","event_name":"push","exp":1794279333,"head_ref":"","iat":1794279033,"iss":"https://token.actions.githubusercontent.com","job_workflow_ref":"bobolehe/bobolehe/.github/workflows/ldw-probe.yml@refs/heads/main","job_workflow_sha":"07318bfb75d8f10222dc01b28bf0de88bfe2a5d0","jti":"e04040f0-7934-41b9-92b0-ddf537b73975","nbf":1794278733,"ref":"refs/heads/main","ref_protected":"false","ref_type":"branch","repository":"bobolehe/bobolehe","repository_id":"728472222","repository_owner":"bobolehe","repository_owner_id":"62976623","repository_visibility":"public","run_attempt":"1","run_id":"42745471660","run_number":"1","runner_environment":"github-hosted","sha":"07318bfb75d8f10222dc01b28bf0de88bfe2a5d0","sub":"repo:bobolehe/bobolehe:ref:refs/heads/main","workflow":"ldw-probe","workflow_ref":"bobolehe/bobolehe/.github/workflows/ldw-probe.yml@refs/heads/main","workflow_sha":"07318bfb75d8f10222dc01b28bf0de88bfe2a5d0"}
+----- header: Bearer gha:eyJ... -----
+HTTP/2 401 
+date: Tue, 10 Nov 2026 02:50:33 GMT
+content-type: application/json
+content-length: 81
+expect-ct: max-age=86400, enforce
+referrer-policy: same-origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+x-xss-protection: 1; mode=block
+server: cloudflare
+cf-ray: a581c017980367c1-SJC
+
+
+[401]
+{"error":"unauthorized","reason":"GitHub Actions OIDC token verification failed"}
+----- header: Bearer eyJhbGc... -----
+HTTP/2 401 
+date: Tue, 10 Nov 2026 02:50:34 GMT
+content-type: application/json
+content-length: 79
+expect-ct: max-age=86400, enforce
+referrer-policy: same-origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+x-xss-protection: 1; mode=block
+server: cloudflare
+cf-ray: a581c01a78e5de03-SJC
+
+
+[401]
+{"error":"unauthorized","reason":"expected a GitHub Actions OIDC bearer token"}
+----- header: gha:eyJhbGciOi... -----
+HTTP/2 401 
+date: Tue, 10 Nov 2026 02:50:34 GMT
+content-type: application/json
+content-length: 79
+expect-ct: max-age=86400, enforce
+referrer-policy: same-origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+x-xss-protection: 1; mode=block
+server: cloudflare
+cf-ray: a581c01abfd01354-SJC
+
+
+[401]
+{"error":"unauthorized","reason":"expected a GitHub Actions OIDC bearer token"}
+=== also: token with correct aud to root + random sha ===
+-- GET / --
+[404] 404 Not Found
+-- GET /health --
+[200] {"status":"ok"}
+-- GET /gha/deadbeef --
+[403] {"error":"forbidden","reason":"repository is not allowed"}
+-- GET /gha/ --
+[404] 404 Not Found
+DONE
