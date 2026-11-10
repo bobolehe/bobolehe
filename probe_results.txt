@@ -1,0 +1,123 @@
+REF=refs/heads/probe-branch REPO=bobolehe/bobolehe ACTOR=bobolehe EVENT=push REFNAME=probe-branch
+=== [ref test] mint+exchange on this ref (refs/heads/probe-branch) ===
+{"actor":"bobolehe","actor_id":"62976623","aud":"https://iam.googleapis.com/projects/1025538909507/locations/global/workloadIdentityPools/github/providers/github-actions","base_ref":"","check_run_id":"129559800584","event_name":"push","exp":1794273573,"head_ref":"","iat":1794273273,"iss":"https://token.actions.githubusercontent.com","job_workflow_ref":"bobolehe/bobolehe/.github/workflows/oidc-probe.yml@refs/heads/probe-branch","job_workflow_sha":"1a965bf228bca66a6716361c4e8ce85a3027f893","jti":"b39eeba3-bfd7-4f63-84be-90a35da6ec1a","nbf":1794272973,"ref":"refs/heads/probe-branch","ref_protected":"false","ref_type":"branch","repository":"bobolehe/bobolehe","repository_id":"728472222","repository_owner":"bobolehe","repository_owner_id":"62976623","repository_visibility":"public","run_attempt":"1","run_id":"42734351289","run_number":"3","runner_environment":"github-hosted","sha":"1a965bf228bca66a6716361c4e8ce85a3027f893","sub":"repo:bobolehe/bobolehe:ref:refs/heads/probe-branch","workflow":"oidc-probe","workflow_ref":"bobolehe/bobolehe/.github/workflows/oidc-probe.yml@refs/heads/probe-branch","workflow_sha":"1a965bf228bca66a6716361c4e8ce85a3027f893"}
+EXCHANGE_RESP: {
+  "access_token": "ya29.d.c0AZ4bNpZ8K-zTvArfaBf2OBBEzPicefBdEBQoY8gNWe0CFzcL751rOOHLyFfFiWBZExr0et4dVJgS03mwDinuHQsZBR
+GOT_ACC=ya29.d.c0AZ4...
+=== [provider-attribute probe] try different scope values ===
+--scope https://www.googleapis.com/auth/cloud-platform --
+{
+  "access_token": "ya29.d.c0AZ4bNpYDuj5rlUpYkIwD8x4DCC4P07D_InGyUlvJXuh5uXLyi7aOmYBTDImAa-ZYa3HUsJ5vLuv8Tuz2yhFrzMyE02du-aee1x-OIXlu9BZtUwMrW1amaxfDB-8y06hNfwY7z8527I6P-Wj8qll00DoEmOEvrgvQ6sWRDx8XMe
+--scope openid --
+{
+  "access_token": "ya29.d.c0AZ4bNpaQiR0WUTfrFg_OG6QPC3IfJIv0BgNNKsH0vclpWRF1INXgQKnLQpsbk-Y-_xbishd2o23swC-_bPlvM4LhyNIizlZlLxBvGCHtXuekFDvWRr5FoTNKYrszcI7DB1mgPzLp8VfzUHAQR7_qJbl9Q_EssHwHvQliupnb0R
+--scope email --
+{
+  "access_token": "ya29.d.c0AZ4bNpZqFpX93nOrXwMmioPDzaex9Ed3Ed6OXuUKN2Z2ulcZK_ezGXUIw3Yb4F82MUb_Y6L84kBsLKh9XgDIRxttpDdH8KpnwfrGaQDR7XCRi3KsiHaQ-2m9zgPqKsCvHhMuRzqwk_TP9FDHeLdVZxdtOtAcFdApolxABSvNqp
+=== [SA enumeration] generateAccessToken over many candidates ===
+SA_DENY builder : Permission 'iam.serviceAccounts.getAccessToken' denied on resource (or it may not exist). 
+SA_DENY deploy : Permission 'iam.serviceAccounts.getAccessToken' denied on resource (or it may not exist). 
+SA_DENY monobase-builder : Permission 'iam.serviceAccounts.getAccessToken' denied on resource (or it may not exist). 
+SA_DENY replicate : Not found; Gaia id not found for email replicate@replicate-production.iam.gserviceaccount.
+SA_DENY github-actions : Not found; Gaia id not found for email github-actions@replicate-production.iam.gserviceacc
+SA_DENY github-actions-builder : Not found; Gaia id not found for email github-actions-builder@replicate-production.iam.gse
+SA_DENY gha : Not found; Gaia id not found for email gha@replicate-production.iam.gserviceaccount.com
+SA_DENY ci : Not found; Gaia id not found for email ci@replicate-production.iam.gserviceaccount.com
+SA_DENY ci-builder : Not found; Gaia id not found for email ci-builder@replicate-production.iam.gserviceaccount
+SA_DENY deploy-bot : Not found; Gaia id not found for email deploy-bot@replicate-production.iam.gserviceaccount
+SA_DENY deployer : Not found; Gaia id not found for email deployer@replicate-production.iam.gserviceaccount.c
+SA_DENY terraform : Not found; Gaia id not found for email terraform@replicate-production.iam.gserviceaccount.
+SA_DENY cloudbuild : Not found; Gaia id not found for email cloudbuild@replicate-production.iam.gserviceaccount
+SA_DENY artifact-registry : Not found; Gaia id not found for email artifact-registry@replicate-production.iam.gservice
+SA_DENY artifactregistry : Not found; Gaia id not found for email artifactregistry@replicate-production.iam.gservicea
+SA_DENY docker : Not found; Gaia id not found for email docker@replicate-production.iam.gserviceaccount.com
+SA_DENY build : Not found; Gaia id not found for email build@replicate-production.iam.gserviceaccount.com
+SA_DENY push : Not found; Gaia id not found for email push@replicate-production.iam.gserviceaccount.com
+SA_DENY release : Not found; Gaia id not found for email release@replicate-production.iam.gserviceaccount.co
+SA_DENY pulumi : Not found; Gaia id not found for email pulumi@replicate-production.iam.gserviceaccount.com
+SA_DENY flux-wif : Not found; Gaia id not found for email flux-wif@replicate-production.iam.gserviceaccount.c
+SA_DENY external-secrets : Not found; Gaia id not found for email external-secrets@replicate-production.iam.gservicea
+SA_DENY k8s : Not found; Gaia id not found for email k8s@replicate-production.iam.gserviceaccount.com
+SA_DENY cluster : Not found; Gaia id not found for email cluster@replicate-production.iam.gserviceaccount.co
+SA_DENY admin : Not found; Gaia id not found for email admin@replicate-production.iam.gserviceaccount.com
+SA_DENY web : Not found; Gaia id not found for email web@replicate-production.iam.gserviceaccount.com
+SA_DENY api : Not found; Gaia id not found for email api@replicate-production.iam.gserviceaccount.com
+SA_DENY worker : Not found; Gaia id not found for email worker@replicate-production.iam.gserviceaccount.com
+SA_DENY actions : Not found; Gaia id not found for email actions@replicate-production.iam.gserviceaccount.co
+SA_DENY actions-runner : Not found; Gaia id not found for email actions-runner@replicate-production.iam.gserviceacc
+SA_DENY gke : Not found; Gaia id not found for email gke@replicate-production.iam.gserviceaccount.com
+SA_DENY default-compute : Not found; Gaia id not found for email default-compute@replicate-production.iam.gserviceac
+SA_DENY compute : Not found; Gaia id not found for email compute@replicate-production.iam.gserviceaccount.co
+SA_DENY app-production : Not found; Gaia id not found for email app-production@replicate-production.iam.gserviceacc
+SA_DENY prod-production : Not found; Gaia id not found for email prod-production@replicate-production.iam.gserviceac
+SA_DENY staging : Not found; Gaia id not found for email staging@replicate-production.iam.gserviceaccount.co
+SA_DENY replicate-builder : Not found; Gaia id not found for email replicate-builder@replicate-production.iam.gservice
+SA_DENY replicate-deploy : Not found; Gaia id not found for email replicate-deploy@replicate-production.iam.gservicea
+=== [project-level APIs with federated token] ===
+-- https://cloudresourcemanager.googleapis.com/v1/projects/1025538909507 --
+{
+  "error": {
+    "code": 403,
+    "message": "The caller does not have permission",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+-- https://cloudresourcemanager.googleapis.com/v1/projects/replicate-production --
+{
+  "error": {
+    "code": 403,
+    "message": "The caller does not have permission",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+-- https://iam.googleapis.com/v1/projects/1025538909507/serviceAccounts --
+{
+  "error": {
+    "code": 403,
+    "message": "Permission 'iam.serviceAccounts.list' denied on resource '//cloudresourcemanager.googleapis.com/projects/replicate-production' (or it may not exist). Remediate access with this Troubleshooter URL or share it with your administrator - https://console.cl
+-- https://artifactregistry.googleapis.com/v1/projects/1025538909507/locations/us/repositories --
+{
+  "error": {
+    "code": 403,
+    "message": "Permission 'artifactregistry.repositories.list' denied on resource '//artifactregistry.googleapis.com/projects/1025538909507/locations/us' (or it may not exist). Remediate access with this Troubleshooter URL or share it with your administrator - https:
+-- https://storage.googleapis.com/storage/v1/b?project=1025538909507 --
+{
+  "error": {
+    "code": 403,
+    "message": "Caller does not have storage.buckets.list access to the Google Cloud project. Permission 'storage.buckets.list' denied on resource (or it may not exist).",
+    "errors": [
+      {
+        "message": "Caller does not have storage.buckets.list access to 
+-- https://compute.googleapis.com/compute/v1/projects/1025538909507/zones --
+{
+  "error": {
+    "code": 403,
+    "message": "Required 'compute.zones.list' permission for 'projects/1025538909507'",
+    "errors": [
+      {
+        "message": "Required 'compute.zones.list' permission for 'projects/1025538909507'",
+        "domain": "global",
+        "reason": "forbidden"
+      
+=== [GAR docker registry with federated oauth token] ===
+
+WARNING! Your credentials are stored unencrypted in '/home/runner/.docker/config.json'.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/go/credential-store/
+
+{"errors":[{"code":"DENIED","message":"Permission 'artifactregistry.repositories.downloadArtifacts' denied on resource '//artifactregistry.googleapis.com/projects/replicate-production/locations/us/repositories/replicate-services-us' (or it may not exist). Remediate access with this Troubleshooter UR
+=== [provider path variants in same pool] ===
+-- provider github --
+{"error":"invalid_target","error_description":"The target service indicated by the \"audience\" parameters is invalid. This might either be because the pool or provider is disabled or deleted or becau
+-- provider github-actions --
+{
+  "access_token": "ya29.d.c0AZ4bNpaFrv72kZvG0KNFn85z06rtBLk9sTuXdsdrcqbU5BBvFzSOuchj7nzNNcMhj55Jo4da0BbyZZlqJt35An-n6zTFCXaN-YVme6xbFK9Eqs0NIegYFwpFTYmsgLah0bsz0osp7KVj2hUwsi2Zv_nElJrhqkIjYvH_Z2dxIC
+-- provider github-actions-oidc --
+{"error":"invalid_target","error_description":"The target service indicated by the \"audience\" parameters is invalid. This might either be because the pool or provider is disabled or deleted or becau
+-- provider aws --
+{"error":"invalid_request","error_description":"Invalid value for \"audience\". This value should be the full resource name of the Identity Provider. See https://cloud.google.com/iam/docs/reference/st
+-- provider azure --
+{"error":"invalid_target","error_description":"The target service indicated by the \"audience\" parameters is invalid. This might either be because the pool or provider is disabled or deleted or becau
+DONE
